@@ -6,12 +6,19 @@
 //  Copyright © 2018, Alibaba Group Holding Limited
 //
 
+// Android Bitmap相关头文件，用于处理Android位图
 #include <android/bitmap.h>
+// JNI相关头文件，用于Java与C++交互
 #include <jni.h>
+// 字符串处理头文件
 #include <string.h>
+// MNN图像处理相关
 #include <MNN/ImageProcess.hpp>
+// MNN解释器相关，用于加载和运行模型
 #include <MNN/Interpreter.hpp>
+// MNN张量相关，用于处理输入输出数据
 #include <MNN/Tensor.hpp>
+// 智能指针相关头文件
 #include <memory>
 
 extern "C" JNIEXPORT jlong JNICALL
