@@ -19,12 +19,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alibaba.mls.api.ModelItem
-import com.alibaba.mnnllm.android.main.MainActivity
 import com.alibaba.mnnllm.android.R
+import com.alibaba.mnnllm.android.main.MainActivity
 import com.alibaba.mnnllm.android.mainsettings.MainSettingsActivity
 import com.alibaba.mnnllm.android.utils.CrashUtil
 import com.alibaba.mnnllm.android.utils.PreferenceUtils.isFilterDownloaded
-import com.alibaba.mnnllm.android.utils.PreferenceUtils.setFilterDownloaded
 import com.alibaba.mnnllm.android.utils.RouterUtils.startActivity
 
 class ModelListFragment : Fragment(), ModelListContract.View {

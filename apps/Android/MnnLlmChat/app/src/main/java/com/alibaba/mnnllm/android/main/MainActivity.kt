@@ -126,6 +126,8 @@ class MainActivity : AppCompatActivity() {
         )
         drawerLayout.addDrawerListener(toggle!!)
         toggle!!.syncState()
+
+        // 模型列表
         supportFragmentManager.beginTransaction()
             .replace(
                 R.id.main_fragment_container,

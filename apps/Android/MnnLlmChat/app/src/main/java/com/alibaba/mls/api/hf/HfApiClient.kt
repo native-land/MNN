@@ -29,7 +29,8 @@ class HfApiClient(@JvmField val host: String) {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
         builder.connectTimeout(30, TimeUnit.SECONDS)
         builder.readTimeout(30, TimeUnit.SECONDS)
-//        val okHttpClient:OkHttpClient = builder.build()
+        // Add logging interceptor
+        builder.addInterceptor(LoggingInterceptor())
         okHttpClient = builder.build()
         return okHttpClient
     }

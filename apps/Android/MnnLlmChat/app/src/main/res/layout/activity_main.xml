@@ -9,14 +9,14 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        >
+        android:fitsSystemWindows="true">
+
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            >
+            android:fitsSystemWindows="true">
+
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -24,27 +24,27 @@
                 android:elevation="0dp"
                 app:titleCentered="true"
                 app:titleTextAppearance="?textAppearanceTitleMedium"
-                app:layout_scrollFlags="scroll|enterAlways" >
-            </com.google.android.material.appbar.MaterialToolbar>
+                app:layout_scrollFlags="scroll|enterAlways"/>
+
             <include
                 layout="@layout/layout_toolbar_filters_content"
-                app:layout_scrollFlags="scroll|enterAlways|snap"
-                />
+                app:layout_scrollFlags="scroll|enterAlways|snap" />
         </com.google.android.material.appbar.AppBarLayout>
+
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:fitsSystemWindows="false"
-            >
-        <FrameLayout
-            android:id="@+id/main_fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="false"
-            />
+            android:fitsSystemWindows="false">
+
+            <FrameLayout
+                android:id="@+id/main_fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="false" />
         </androidx.core.widget.NestedScrollView>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
@@ -52,13 +52,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
-        android:fitsSystemWindows="true"
-        >
+        android:fitsSystemWindows="true">
 
         <com.nambimobile.widgets.efab.Overlay
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:overlay_orientation="portrait"/>
+            app:overlay_orientation="portrait" />
+
         <com.nambimobile.widgets.efab.ExpandableFab
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             android:layout_marginBottom="@dimen/ui_margin_medium"
             android:layout_marginEnd="@dimen/ui_margin_medium"
             android:layout_marginRight="@dimen/ui_margin_medium"
-            app:efab_orientation="portrait"/>
+            app:efab_orientation="portrait" />
 
         <com.nambimobile.widgets.efab.FabOption
             android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
             app:fab_orientation="portrait"
             app:label_text="@string/star_project"
             app:fab_icon="@drawable/ic_github"
-            android:onClick="onStarProject"/>
+            android:onClick="onStarProject" />
 
         <com.nambimobile.widgets.efab.FabOption
             android:layout_width="wrap_content"
@@ -82,7 +82,7 @@
             app:fab_orientation="portrait"
             app:label_text="@string/raise_issue"
             app:fab_icon="@drawable/ic_issue"
-            android:onClick="onReportIssue"/>
+            android:onClick="onReportIssue" />
 
         <com.nambimobile.widgets.efab.FabOption
             android:layout_width="wrap_content"
@@ -90,7 +90,7 @@
             app:fab_orientation="portrait"
             app:label_text="@string/add_local_models"
             app:fab_icon="@drawable/ic_model"
-            android:onClick="addLocalModels"/>
+            android:onClick="addLocalModels" />
     </com.nambimobile.widgets.efab.ExpandableFabLayout>
     <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
@@ -98,8 +98,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        >
+        android:fitsSystemWindows="true">
+
         <FrameLayout
             android:id="@+id/history_fragment_container"
             android:paddingTop="24dp"
