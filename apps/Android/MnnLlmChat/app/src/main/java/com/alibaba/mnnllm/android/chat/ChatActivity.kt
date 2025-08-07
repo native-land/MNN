@@ -56,8 +56,11 @@ class ChatActivity : AppCompatActivity() {
 
     private val _isGenerating = MutableStateFlow(false)
     private var layoutModelLoading: View? = null
+
+
     lateinit var modelName: String
     private var modelId: String? = null
+
     private var currentUserMessage: ChatDataItem? = null
     private var sessionName: String? = null
     private val configShowCustomToolbar = false
