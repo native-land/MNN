@@ -75,6 +75,21 @@ JNIEXPORT jlong JNICALL Java_com_alibaba_mnnllm_android_llm_LlmSession_initNativ
 }
 
 
+/*
+ * JNI方法：Java_com_alibaba_mnnllm_android_llm_LlmSession_submitNative
+ * 功能：提交用户输入给LLM模型进行推理，并返回性能统计数据
+ * 
+ * 参数说明：
+ * - env: JNI环境指针，用于与Java层交互
+ * - thiz: Java层调用此方法的对象实例（LlmSession）
+ * - llmPtr: LLM会话对象的指针，由initNative方法创建
+ * - inputStr: 用户输入的文本内容
+ * - keepHistory: 是否保留历史对话记录（在当前实现中未使用）
+ * - progressListener: 进度监听器，用于接收模型生成的文本片段
+ * 
+ * 返回值：
+ * - HashMap<String, Long>: 包含性能统计数据的Java HashMap对象
+ */
 JNIEXPORT jobject JNICALL Java_com_alibaba_mnnllm_android_llm_LlmSession_submitNative(JNIEnv *env,
                                                                                       jobject thiz,
                                                                                       jlong llmPtr,
@@ -82,48 +97,75 @@ JNIEXPORT jobject JNICALL Java_com_alibaba_mnnllm_android_llm_LlmSession_submitN
                                                                                       jboolean keepHistory,
                                                                                       jobject
                                                                                       progressListener) {
+    // 将Java传递的long型指针转换为C++ LlmSession对象指针
     auto *llm = reinterpret_cast<mls::LlmSession *>(llmPtr);
+    
+    // 检查LLM对象是否有效
     if (!llm) {
         return env->NewStringUTF("Failed, Chat is not ready!");
     }
+    
+    // 获取输入字符串的C风格字符指针
     const char *input_str = env->GetStringUTFChars(inputStr, nullptr);
+    
+    // 获取进度监听器的类信息
     jclass progressListenerClass = env->GetObjectClass(progressListener);
+    
+    // 获取进度监听器的onProgress方法ID，该方法用于接收生成的文本片段
     jmethodID onProgressMethod = env->GetMethodID(progressListenerClass, "onProgress",
                                                   "(Ljava/lang/String;)Z");
     if (!onProgressMethod) {
         MNN_DEBUG("ProgressListener onProgress method not found.");
     }
+    
+    // 调用LLM的Response方法进行推理，传入输入文本和回调函数
+    // 回调函数会在每次生成新文本时被调用，用于将结果返回给Java层
     auto *context = llm->Response(input_str, [&, progressListener, onProgressMethod](
             const std::string &response, bool is_eop) {
+        // 如果进度监听器和方法都有效
         if (progressListener && onProgressMethod) {
+            // 如果是结束标记，则传入null，否则创建Java字符串
             jstring javaString = is_eop ? nullptr : env->NewStringUTF(response.c_str());
+            
+            // 调用Java层的onProgress方法，传递生成的文本片段
             jboolean user_stop_requested = env->CallBooleanMethod(progressListener,
                                                                   onProgressMethod, javaString);
+            
+            // 释放局部引用
             env->DeleteLocalRef(javaString);
+            
+            // 返回用户是否请求停止生成
             return (bool) user_stop_requested;
         } else {
+            // 如果没有监听器，继续生成
             return true;
         }
     });
-    int64_t prompt_len = 0;
-    int64_t decode_len = 0;
-    int64_t vision_time = 0;
-    int64_t audio_time = 0;
-    int64_t prefill_time = 0;
-    int64_t decode_time = 0;
+    
+    // 初始化性能统计变量
+    int64_t prompt_len = 0;      // 提示词长度
+    int64_t decode_len = 0;      // 解码长度
+    int64_t vision_time = 0;     // 视觉处理时间
+    int64_t audio_time = 0;      // 音频处理时间
+    int64_t prefill_time = 0;    // 预填充时间
+    int64_t decode_time = 0;     // 解码时间
+    
+    // 累加本次推理的性能统计数据
     prompt_len += context->prompt_len;
     decode_len += context->gen_seq_len;
     vision_time += context->vision_us;
     audio_time += context->audio_us;
     prefill_time += context->prefill_us;
     decode_time += context->decode_us;
+    
+    // 创建HashMap用于返回性能统计数据
     jclass hashMapClass = env->FindClass("java/util/HashMap");
     jmethodID hashMapInit = env->GetMethodID(hashMapClass, "<init>", "()V");
     jmethodID putMethod = env->GetMethodID(hashMapClass, "put",
                                            "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     jobject hashMap = env->NewObject(hashMapClass, hashMapInit);
 
-    // Add metrics to the HashMap
+    // 将各项性能统计数据添加到HashMap中
     env->CallObjectMethod(hashMap, putMethod, env->NewStringUTF("prompt_len"),
                           env->NewObject(env->FindClass("java/lang/Long"),
                                          env->GetMethodID(env->FindClass("java/lang/Long"),
@@ -148,6 +190,11 @@ JNIEXPORT jobject JNICALL Java_com_alibaba_mnnllm_android_llm_LlmSession_submitN
                           env->NewObject(env->FindClass("java/lang/Long"),
                                          env->GetMethodID(env->FindClass("java/lang/Long"),
                                                           "<init>", "(J)V"), decode_time));
+    
+    // 释放输入字符串的资源
+    env->ReleaseStringUTFChars(inputStr, input_str);
+    
+    // 返回包含性能统计数据的HashMap
     return hashMap;
 }
 
@@ -228,8 +275,7 @@ JNIEXPORT jobject JNICALL Java_com_alibaba_mnnllm_android_llm_LlmSession_submitF
 
     // 设置进度回调
     jclass progressListenerClass = env->GetObjectClass(progressListener);
-    jmethodID onProgressMethod = env->GetMethodID(progressListenerClass, "onProgress",
-                                                  "(Ljava/lang/String;)Z");
+    jmethodID onProgressMethod = env->GetMethodID(progressListenerClass, "onProgress","(Ljava/lang/String;)Z");
 
     if (!onProgressMethod) {
         MNN_DEBUG("ProgressListener onProgress method not found.");
@@ -240,8 +286,7 @@ JNIEXPORT jobject JNICALL Java_com_alibaba_mnnllm_android_llm_LlmSession_submitF
             const std::string &response, bool is_eop) {
         if (progressListener && onProgressMethod) {
             jstring javaString = is_eop ? nullptr : env->NewStringUTF(response.c_str());
-            jboolean user_stop_requested = env->CallBooleanMethod(progressListener,
-                                                                  onProgressMethod, javaString);
+            jboolean user_stop_requested = env->CallBooleanMethod(progressListener,onProgressMethod, javaString);
             if (javaString) {
                 env->DeleteLocalRef(javaString);
             }
