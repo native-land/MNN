@@ -47,7 +47,7 @@ The directory structure is as follows:
      ├── llm.mnn.json
      ├── llm.mnn.weight
      ├── onnx/
-          ├──llm.onnx
+          ├──llm.onnx 
            ├──llm.onnx.data
      ├── llm_config.json
      └── tokenizer.txt
